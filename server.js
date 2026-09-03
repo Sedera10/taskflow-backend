@@ -15,12 +15,21 @@ const parsePositiveInteger = (value) => {
   return Number.isInteger(parsedValue) && parsedValue > 0 ? parsedValue : null;
 };
 
+// local
+// const pool = new Pool({
+//   user: 'postgres',
+//   host: 'localhost',
+//   database: 'taskflow',
+//   password: 'postgres',
+//   port: 5432
+// });
+
+// Prod
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'taskflow',
-  password: 'postgres',
-  port: 5432
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 pool.on('connect', async (client) => {
@@ -367,4 +376,12 @@ app.delete('/api/tasks/:id', async (req, res) => {
   }
 });
 
-app.listen(4000, () => console.log('Backend prêt sur http://localhost:4000 🚀'));
+
+// Prod
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Backend prêt sur le port ${PORT} `);
+});
+
+// Local
+// app.listen(4000, () => console.log('Backend prêt sur http://localhost:4000 '));
